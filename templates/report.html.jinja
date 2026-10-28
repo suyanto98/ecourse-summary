@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<style>
+  @page {
+    size: A4;
+    margin: 20mm 18mm;
+    @bottom-right { content: "Hal. " counter(page); font-family: "Noto Sans", sans-serif; font-size: 9px; color: #888; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    color: #262b36;
+  }
+  h1, h2, h3 { font-family: "Noto Serif", serif; margin: 0; }
+  .eyebrow {
+    font-size: 8.5pt; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #5a6072;
+  }
+  .header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding-bottom: 12px; border-bottom: 2px solid #262b36; margin-bottom: 18px;
+  }
+  .header .meta { text-align: right; font-size: 9pt; }
+  .header .meta div { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 2px; }
+  .header .meta span:first-child { color: #6b7080; margin-right: 8px; }
+  h1.title { font-size: 19pt; margin: 4px 0; }
+  .subtitle { color: #6b7080; font-size: 9.5pt; }
+
+  .summary-box {
+    background: #eef0f6; padding: 14px 16px; border-radius: 3px; margin-bottom: 22px;
+  }
+  .summary-box p { margin: 6px 0 0 0; }
+
+  .section-title {
+    font-size: 13.5pt; font-weight: 700; border-bottom: 1px solid #c7cad4;
+    padding-bottom: 4px; margin-bottom: 12px;
+  }
+
+  .topic { margin-bottom: 16px; page-break-inside: avoid; }
+  .topic-head { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .ts {
+    font-size: 8.5pt; font-weight: 700; color: #3b4270; background: #e2e4f0;
+    padding: 1px 7px; border-radius: 3px;
+  }
+  .topic h3 { font-size: 11.5pt; }
+  .topic-body { display: flex; gap: 14px; }
+  .topic-body.no-image p { margin: 0; }
+  .topic-img { width: 42mm; flex-shrink: 0; }
+  .topic-img img { width: 100%; border: 1px solid #c7cad4; border-radius: 2px; display: block; }
+  .topic-img .caption { font-size: 7.5pt; color: #888; font-style: italic; margin-top: 2px; }
+  .topic-body p { margin: 0; flex: 1; }
+
+  .glossary { columns: 2; column-gap: 22px; margin-bottom: 22px; }
+  .glossary .term-item { break-inside: avoid; margin-bottom: 9px; }
+  .glossary .term { font-weight: 700; font-size: 10pt; display: block; }
+  .glossary .def { font-size: 9pt; color: #4a4f60; }
+
+  .takeaways { background: #262b36; color: #f2f3f6; padding: 16px 18px; border-radius: 3px; }
+  .takeaways .eyebrow { color: #b9bccb; margin-bottom: 8px; display: block; }
+  .takeaways ul { margin: 0; padding-left: 16px; }
+  .takeaways li { margin-bottom: 6px; font-size: 9.5pt; }
+
+  .footer-note { margin-top: 16px; font-size: 8pt; color: #999; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <span class="eyebrow">Ringkasan Materi Video</span>
+    <h1 class="title">{{ title }}</h1>
+    <div class="subtitle">{{ subtitle }}</div>
+  </div>
+  <div class="meta">
+    <div><span>Durasi</span><strong>{{ duration }}</strong></div>
+    <div><span>Sumber</span><strong>{{ source_name }}</strong></div>
+  </div>
+</div>
+
+<div class="summary-box">
+  <span class="eyebrow" style="color:#3b4270;">Ringkasan Eksekutif</span>
+  <p>{{ summary }}</p>
+</div>
+
+<div class="section-title">Poin-Poin Materi</div>
+{% for t in topics %}
+<div class="topic">
+  <div class="topic-head">
+    <span class="ts">{{ t.timestamp }}</span>
+    <h3>{{ t.heading }}</h3>
+  </div>
+  <div class="topic-body{% if not t.image_b64 %} no-image{% endif %}">
+    {% if t.image_b64 %}
+    <div class="topic-img">
+      <img src="data:image/jpeg;base64,{{ t.image_b64 }}">
+      <div class="caption">Cuplikan layar dari video pada {{ t.timestamp }}</div>
+    </div>
+    {% endif %}
+    <p>{{ t.body }}</p>
+  </div>
+</div>
+{% endfor %}
+
+{% if glossary %}
+<div class="section-title">Istilah Penting</div>
+<div class="glossary">
+  {% for g in glossary %}
+  <div class="term-item">
+    <span class="term">{{ g.term }}</span>
+    <span class="def">{{ g.definition }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if takeaways %}
+<div class="takeaways">
+  <span class="eyebrow">Kesimpulan &amp; Actionable Takeaways</span>
+  <ul>
+    {% for tk in takeaways %}
+    <li>{{ tk }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<div class="footer-note">Dibuat otomatis dari transkrip video (ecourse-summary) &mdash; {{ generated_at }}</div>
+
+</body>
+</html>
